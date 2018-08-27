@@ -1,114 +1,337 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta  charset="UTF-8">
-<title>(加速器)BBS论坛</title>
-<link href="css/navigation.css" rel="stylesheet">
-<style type="text/css">
-/* 共用css */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;  /*为元素设定的宽度和高度决定了元素的边框盒。就是说，为元素指定的任何内边距和边框都将在已设定的宽度和高度内进行绘制。通过从已设定的宽度和高度分别减去边框和内边距才能得到内容的宽度和高度。*/
-}
-html, body {
-  height: 100%;
-  display: block;
-  background: #EEE;
-  word-wrap: break-word;  /*允许换行并且对长单词拆分*/
-}
-#wrapper {
-  min-height: 100%; 
-  height: auto !important; 
-  height: 100%;
-  margin: auto;
-}
-header, article, footer {
-  padding: 10px;
-  width: 1000px;
-  margin: auto;
-  overflow: hidden;
-}
-fooder {
-  margin: auto;
-  overflow: hidden;
-  margin-top: -120px;
-  display: block;
-}
-header {
-  background: #37C6C0;
-  min-height: 100%; 
-}
-article {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-}
-footer {
-  height: 60px;
-  margin-top: -60px;
-  background: #1DB0B8;
-}
-.center {
-  margin: auto;
-}
-.f_l {
-	float: left
-}
-.f_r {
-	float: right
-}
-/*页面首部*/
-.page_top {
-    padding: 10px;
-    margin-bottom: 10px
-}
+<html>
 
-/*卡片布局*/
-.card {}
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="assets/js/jquery-3.3.1.min.js"></script>
+		<link href="css/list-base.css" rel="stylesheet">
+		<style>
+			.time {
+				text-align: end;
+			}
+			.list {
+				overflow: auto; 
+				height: 90%;
+				width: 90%; 
+				margin: auto;
+			}
+			.item3 {
+				display: flex;/*设为伸缩容器*/
+			}
+			.left {
+				float: left;
+				width: 100px;
+				height: 100px;
+				margin-right: 5px;
+			}
+			.head-mid{
+				width: 100px;
+				height: 100px;
+			}
+			.right {
+				overflow: hidden;
+			}
+			.right2 {
+				margin-left: 100px;
+			}
+			.right3 {
+				flex:1;/*这里设置为占比1，填充满剩余空间*/ 
+			}
+			.right4 {
+				display: table-cell; width: 9999px;
+			}
+		</style>
+		<script>
+			var log = console.log;
+			
+			var ListView = (function() {
+				/* <控制台不可见的私有属性> */
+				let privdata = new WeakMap();
+				/* <控制台可见的私有属性> */
+				const __ = {
+					data: Symbol('data')
+				}
+				/** 
+				 * <ListView 构造函数>
+				 */
+				function ListView() {
+					// 初始化私有属性集
+					privdata.set(this, {});
+					// 初始化参数，HTMLElement_ID
+					if (arguments[0]) {
+						this.changeid(arguments[0]);
+					}
+				}
+				// ListView.prototype.find = function(e) {
+				// 	privdata.get(this).listview = $(e);
+				// }
+				/**
+				 * 改变id，将listview索引向新的HTMLElement
+				 */
+				ListView.prototype.changeid = function(id) {
+					privdata.get(this).listview = $(id);
+				}
 
-</style>
 
-<script type="text/javascript">
+				ListView.prototype.set = function (pos, element) {
+					
+				}
+				
+				/** 
+				 * <初始化-加载条目视图与映射关系>
+				 * @param {String} ihtml item 的 html代码 
+				 * @param {Array} maps view 到 data 的映射
+				 */
+				Object.defineProperty(ListView.prototype, 'init', {
+					value: function(ihtml, maps) {
+						let dataset = privdata.get(this);  // 获取私有数据集
+						dataset.itemhtml = ihtml;
+						dataset.maps = maps;  // 映射（view->data）
+						dataset.data = {};
+						dataset.data.itemsdata = [];
+					}
+				});
+				/**
+				 * <列表数据>
+				 * @param {Array} itemsdata 所有列表项的数据
+				 */
+				ListView.prototype.itemsdata = function(itemsdata) {
+					if (itemsdata) {
+						privdata.get(this).data.itemsdata =itemsdata;
+					} else {
+						return privdata.get(this).data.itemsdata;
+					}
+				}
+				/**
+				 * <所有数据>
+				 * @param {Array} data 所有的数据
+				 */
+				ListView.prototype.data = function(data) {
+					if (data) {
+						privdata.get(this).data =data;
+					} else {
+						return privdata.get(this).data;
+					}
+				}
+				/**
+				 * 显示列表
+				 */
+				ListView.prototype.show = function() {
+					let dataset = privdata.get(this);
+					let list = dataset.listview;
+					let maps = dataset.maps;
+					let itemsdata = this.itemsdata();
+					/* <遍历填充数据> */
+					for(const it of itemsdata) {
+						let item = $(dataset.itemhtml);
+						item.appendTo(list);
+						/*<显示元素>*/
+						for(const map of maps) {
+							let subnode = item.find('.' + map.class);
+							if(map.field) { /*<是否填充界面数据>*/
+								subnode.html(it[map.field]);
+							}
+							/*<元素字段>*/
+							if(map.attrs) {
+								for(attr of map.attrs) {
+									item.find('.' + map.class).attr(attr.name, it.attrs[attr.field]);
+								}
+							}
+						}
+					}
+				};
+				return ListView;
+			}());
+			log(new ListView())
+		</script>
+	</head>
 
-</script>
-</head>
+	<body>
+		<ul id="list-view"></ul>
+		<ul id="list-view2"></ul>
+		<ul id="list-view3" class="list"></ul>
+		
+		<script>
+			/* <产生测试数据--Generating test data> */
+			function gen_data(number, config, maps) {
+				let cnf = config||{version:'1.0.0'}
+				let size =number;
+				let data;
+				switch (cnf.version) {
+					case '1.0.0':
+						data = [];
+						for(let i = 0; i < size; i++) {
+							let item = {
+								title: 'title_' + i,
+								content: 'content_' + i,
+								attrs: {
+									data_field: '{rows:' + i + '}'
+								}
+							}
+							data.push(item);
+						}
+						return data;
+						break;
+					case '1.0.1':  
+						data ={  /*<listview-data>*/
+							classes: ['blanklist'],  
+							items: []
+						}
+						for (let i = 0; i < size; i++) {
+							let item ={  /*<itemview-data>*/
+								classes: ['card'],  
+								title: {  /*<title 节点所需要的数据>*/
+									html: 'Title_'+i
+								},
+								content: {
+									html: 'Content_'+i,
+									classes: []
+								},
+								time: {
+									html: '2018/8/18 15:33:25'
+								}
+							}
+							data.items.push(item)
+						}
+						return data;
+						break;
+					default:
+						break;
+				}
+			}
 
-<body>
+			/* <界面适配 ul: list view, li: item templete, map: id|class to field, data: list data > */
+			function adapter(selector, itemhtml, mulmaps, alldata) {
+				this.focus = function (selector) {
+					this.listview = $(selector);
+				}
+				/**
+				 * 初始化item模板及映射关系，暂时有两种，一种是在itemhtml中添加属性data-pos另一种则是建立位置映射
+				 */
+				this.init = function init(itemhtml, mulmaps) {
+					this.itemhtml = itemhtml;
+					this.mulmaps = mulmaps;
+				}
+				/**
+				 * data 总数据，这里数据加入到缓冲区_cache，包含一些描述添加位置等数据。
+				 * _cache: [{type: 'append', data: {classes: [], title: {}, content: {}, time: {}}}, {type: 'data', data: {classes:[], items: []}}, {}]
+				 * 缓冲先不做了
+				 */
+				this.data = function data(data) {
+					// if(!this._cache) {
+					// 	this._cache =[];
+					// }
+					// this._cache.push({type: 'data', data: data});
+					this._data=data;
+				}
+				/**
+				 * 添加一个列表向到listview中
+				 * item 一个列表项的数据
+				 */
+				this.append = function append(item) {
+					// 将该数据项加入到保存的数据集中
+					this._data.items.push(item);
+					let itemview =$(itemhtml);
+					let listview = this.listview;  // Node
+					let imaps = this.mulmaps.itemmaps;
+					let mk;  // itemmaps 的 key
+					if(item.classes) {
+						for (let i = 0; i < item.classes.length; i++) {
+							itemview.addClass(item.classes[i]);
+						}
+					}
+					for (mk in imaps) {
+						let view =itemview.find(imaps[mk].pos[0]).eq(imaps[mk].pos[1]);
+						if (item[imaps[mk].field]) {
+							view.html(item[imaps[mk].field].html);
+							//  动态样式添加
+							if(item[imaps[mk].field].classes) {
+								for (let i = 0; i < item[imaps[mk].field].classes.length; i++) {
+									view.addClass(item[imaps[mk].field].classes[i]);
+								}
+							}
+						}
+					}
+					itemview.appendTo(listview);
+				}
+				/**
+				 * 将节点生成后添加到DOM中，通过appenddata的则append添加，data则全部覆盖，配置文件config中配置立即刷新与手动刷新
+				 */
+				this.show = function () {
+					let data = this._data;
+					let listview = this.listview;  // Node
+					let itemhtml = this.itemhtml;
+					let imaps = this.mulmaps.itemmaps;
+					let mk;  // itemmaps 的 key
+					listview.html('');
+					// 遍历data结构
+					if(data.classes) {
+						for (let i = 0; i < data.classes.length; i++) {
+							listview.addClass(data.classes[i]);
+						}
+					}
+					for (let it of data.items) {
+						let itemview =$(itemhtml);
+						if(it.classes) {
+							for (let i = 0; i < it.classes.length; i++) {
+								itemview.addClass(it.classes[i]);
+							}
+						}
+						for (mk in imaps) {
+							let view =itemview.find(imaps[mk].pos[0]).eq(imaps[mk].pos[1]);
+							if (it[imaps[mk].field]) {
+								view.html(it[imaps[mk].field].html);
+								//  动态样式添加
+								if(it[imaps[mk].field].classes) {
+									for (let i = 0; i < it[imaps[mk].field].classes.length; i++) {
+										view.addClass(it[imaps[mk].field].classes[i]);
+									}
+								}
+							}
+						}
+						itemview.appendTo(listview);
+					}
+				}
+				this.focus(selector);
+				this.init(itemhtml, mulmaps);
+				this.data(alldata);
+				this.show();
+			}
+			let itemhtml= '<li class="card-wrap item3"><div class="left"><img class="head-mid" src="img/head.jpg" /></div><div class="right3"><h1></h1><p></p><p class="time"></p></div></li>';
+			// 单模板映射  /*<通过定位来映射--相当于取代了itemhtml中的data-pos属性(用来定位哪个元素)--不好理解>*/
+			let itemmaps = [
+				{
+					pos: ['div h1', 0],  // ul li div h1 0 / id
+					field: 'title'  /*<item 的子节点>*/
+				},
+				{
+					pos: ['div p', 0],  // p 0
+					field: 'content'
+				},
+				{
+					pos: ['div p', 1],  // p 0
+					field: 'time'
+				}
+			];
+			let list = new adapter('#list-view3', itemhtml, {itemmaps: itemmaps}, gen_data(15, {version: '1.0.1'}));
+			list.data(gen_data(10, {version: '1.0.1'}));
+			list.show();
+			list.append({  /*<itemview-data>*/
+				classes: ['card'],  
+				title: {  /*<title 节点所需要的数据>*/
+					html: 'Title_footer'
+				},
+				content: {
+					html: 'Content_footer',
+					classes: []
+				},
+				time: {
+					html: '2018/8/27 18:55:25'
+				}
+			});
+			log(list);
+		</script>
+	</body>
 
-<div id="wrapper">
-
-<header>
-<div class="page_top">
-<div id="bbs_title">
-<h1>（加速器）BBS论坛</h1>
-</div>
-<div id="bbs_description">
-<p>欢迎加速器的各位伙伴来交流</p>
-</div>
-</div>
-<div class="topnav">
-</div>
-<nav class="navigation" data-scroll-reveal="enter bottom over 1s after 1s">
-<a href="./"><span>首页</span><span class="en">Home</span></a>
-<a class="f_r"href="#"><span>注册</span><span class="en">Sign up</span></a>
-<a class="f_r"href="#"><span>登陆</span><span class="en">Sign in</span></a>
-</nav>
-</header>
-
-<article>
-
-<h2>板块导航 Section Navigation</h2>
-
-</article>
-
-</div>
-
-<footer>
-<div class="center">
-<p>Copyright&copy; 2018 Wagsn</p>
-</div>
-</footer>
-
-</body>
 </html>
