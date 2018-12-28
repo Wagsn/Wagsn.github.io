@@ -151,7 +151,7 @@
 		<ul id="list-view"></ul>
 		<ul id="list-view2"></ul>
 		<ul id="list-view3" class="list"></ul>
-		
+		<p id="todo-data"> </p>
 		<script>
 			/* <产生测试数据--Generating test data> */
 			function gen_data(number, config, maps) {
@@ -331,6 +331,17 @@
 				}
 			});
 			log(list);
+			// http://www.wagsn.net/api/todo
+			$.ajax({
+        		type: 'get',
+        		url: 'http://www.wagsn.net/api/todo',
+        		data: '',
+        		contentType: 'application/json',
+        		success: function (resbody) {
+            		console.log('response: ' + resbody);
+					$('#todo-data').text(resbody);
+        		}
+    		});
 		</script>
 	</body>
 
