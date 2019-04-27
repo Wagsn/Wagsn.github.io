@@ -8,4 +8,4 @@ used to display js html css effects
 
 This is the template I downloaded from Yang Qing's personal blog.
 
-conllection some interesting thing.
+collection some interesting thing.
