@@ -37,7 +37,7 @@ $(window).resize(function() {
 	};
 })(jQuery);
 
-function timeElapse(date){
+function timeElapse(date, selector){
 	var current = Date();
 	var seconds = (Date.parse(current) - Date.parse(date)) / 1000;
 	var days = Math.floor(seconds / (3600 * 24));
@@ -56,5 +56,7 @@ function timeElapse(date){
 		seconds = "0" + seconds;
 	}
 	var result = "第 <span class=\"digit\">" + days + "</span> 天 <span class=\"digit\">" + hours + "</span> 小时 <span class=\"digit\">" + minutes + "</span> 分钟 <span class=\"digit\">" + seconds + "</span> 秒"; 
-	$("#clock").html(result);
+	if(selector != undefined){
+		$(selector).html(result);
+	}
 }
