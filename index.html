@@ -59,6 +59,11 @@
 					<a href="http://blog.csdn.net/wuxia2001" target="_blank"></a> 相识的
 					<div id="clock"></div>
 				</div>
+                                <div id="clock-box2">
+					<a href="http://blog.csdn.net/wuxia2001" target="_blank"></a> 与小丽
+					<a href="http://blog.csdn.net/wuxia2001" target="_blank"></a> 相恋的
+					<div id="clock"></div>
+				</div>
 				<canvas id="canvas" width="1100" height="680"></canvas>
 			</div>
 			<audio src="123.mp3" autoplay="autoplay"></audio>
@@ -213,6 +218,21 @@
 						$await(Jscex.Async.sleep(1000));
 					}
 				}));
+                                var textAnimate2 = eval(Jscex.compile("async", function() {
+					var together = new Date();
+					together.setFullYear(2019,04,21);
+					together.setHours(19);
+					together.setMinutes(0);
+					together.setSeconds(0);
+					together.setMilliseconds(0);
+
+					$("#code").show().typewriter();
+					$("#clock-box2").fadeIn(500);
+					while(true) {
+						timeElapse(together);
+						$await(Jscex.Async.sleep(1000));
+					}
+				}));
 
 				var runAsync = eval(Jscex.compile("async", function() {
 					$await(seedAnimate());
@@ -221,6 +241,7 @@
 					$await(moveAnimate());
 
 					textAnimate().start();
+                                        textAnimate2().start();
 
 					$await(jumpAnimate());
 				}));
